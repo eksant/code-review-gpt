@@ -21,8 +21,8 @@ jobs:
           envkey_APP_ID: ${{ secrets.APP_ID }}
           envkey_PRIVATE_KEY: "${{ secrets.PRIVATE_KEY }}"
           envkey_WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-          envkey_GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          envkey_GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          envkey_GITHUB_CLIENT_ID: ${{ secrets.NEW_GITHUB_CLIENT_ID }}
+          envkey_GITHUB_CLIENT_SECRET: ${{ secrets.NEW_GITHUB_CLIENT_SECRET }}
           envkey_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           envkey_OPENAI_API_MODEL: ${{ vars.OPENAI_API_MODEL }}
           envkey_OPENAI_API_TEMPERATURE: ${{ vars.OPENAI_API_TEMPERATURE }}
