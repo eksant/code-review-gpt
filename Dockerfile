@@ -1,12 +1,10 @@
-FROM node:18-slim
+FROM node:17-stretch-slim as base
 
 WORKDIR /src
 
 COPY package.json .env ./
 
-ENV NODE_ENV="production"
-
-RUN npm install --production && npm cache clean --force
+RUN npm install --no-optional && npm cache clean --force
 
 COPY . .
 
