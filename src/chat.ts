@@ -7,16 +7,16 @@ export class Chat {
     this.chatAPI = new ChatGPTAPI({
       apiKey: apikey,
       completionParams: {
-        model: process.env.MODEL || "gpt-3.5-turbo",
-        temperature: +(process.env.TEMPERATURE || 0) || 1,
-        top_p: +(process.env.TOP_P || 0) || 1,
+        model: process.env.OPENAI_API_MODEL || "gpt-3.5-turbo",
+        temperature: +(process.env.OPENAI_API_TEMPERATURE || 0) || 1,
+        top_p: +(process.env.OPENAI_API_TOP_P || 0) || 1,
       },
     });
   }
 
   private generatePrompt = (patch: string) => {
-    const answerLanguage = process.env.LANGUAGE
-      ? `Answer me in ${process.env.LANGUAGE},`
+    const answerLanguage = process.env.OPENAI_API_LANGUAGE
+      ? `Answer me in ${process.env.OPENAI_API_LANGUAGE},`
       : "";
 
     return `Bellow is the code patch, please help me do a brief code review, ${answerLanguage} if any bug risk and improvement suggestion are welcome

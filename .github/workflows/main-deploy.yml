@@ -1,0 +1,78 @@
+name: Main Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: main
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Generate Env
+        uses: SpicyPizza/create-envfile@v1.3.0
+        with:
+          file_name: .env
+          fail_on_empty: true
+          # env
+          envkey_WEBHOOK_PROXY_URL: ${{ vars.WEBHOOK_PROXY_URL }}
+          envkey_APP_ID: ${{ secrets.APP_ID }}
+          envkey_PRIVATE_KEY: "${{ secrets.PRIVATE_KEY }}"
+          envkey_WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          envkey_GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          envkey_GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          envkey_OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          envkey_OPENAI_API_MODEL: ${{ vars.OPENAI_API_MODEL }}
+          envkey_OPENAI_API_TEMPERATURE: ${{ vars.OPENAI_API_TEMPERATURE }}
+          envkey_OPENAI_API_TOP_P: ${{ vars.OPENAI_API_TOP_P }}
+          envkey_OPENAI_API_LANGUAGE: ${{ vars.OPENAI_API_LANGUAGE }}
+          envkey_LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+      - name: Share Artifact Inside Workflow
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          if-no-files-found: error
+          name: code-review-gpt-build
+          path: ${{ github.workspace }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Get Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: code-review-gpt-build
+          path: code-review-gpt-build
+      - name: Initial Project
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.DEV_SSH_HOST }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          username: ${{ secrets.DEV_SSH_USER }}
+          script: |
+            mkdir -p /home/deploy/chronicle/crgpt
+            rm -rf /home/deploy/chronicle/crgpt/*
+      - name: Deploy Project
+        uses: appleboy/scp-action@master
+        with:
+          strip_components: 1
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.DEV_SSH_HOST }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          username: ${{ secrets.DEV_SSH_USER }}
+          source: "code-review-gpt-build"
+          target: "/home/deploy/chronicle/crgpt"
+      - name: Run Docker Compose
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          host: ${{ secrets.DEV_SSH_HOST }}
+          port: ${{ secrets.DEV_SSH_PORT }}
+          username: ${{ secrets.DEV_SSH_USER }}
+          script: |
+            docker-compose -f /home/deploy/chronicle/crgpt/docker-compose.yml up -d --build
+            sudo /etc/init.d/nginx reload
