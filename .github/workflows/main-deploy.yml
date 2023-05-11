@@ -17,7 +17,7 @@ jobs:
           file_name: .env
           fail_on_empty: true
           # env
-          envkey_WEBHOOK_PROXY_URL: ${{ vars.WEBHOOK_PROXY_URL }}
+          envkey_WEBHOOK_PROXY_URL: ${{ secrets.WEBHOOK_PROXY_URL }}
           envkey_APP_ID: ${{ secrets.APP_ID }}
           envkey_PRIVATE_KEY: "${{ secrets.PRIVATE_KEY }}"
           envkey_WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
