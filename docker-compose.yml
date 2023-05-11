@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  code-review-gpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: code_review_gpt
+    container_name: code_review_gpt
+    restart: unless-stopped
+    ports:
+      - 3000:3000
