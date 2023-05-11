@@ -2,8 +2,7 @@ FROM node:18-slim
 
 WORKDIR /usr/src/app
 
-COPY package.json yarn.lock ./
-COPY .env ./.env
+COPY package.json yarn.lock .env ./
 
 RUN yarn install --production --frozen-lockfile && yarn cache clean
 
