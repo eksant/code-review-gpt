@@ -1,18 +1,20 @@
 FROM node:18-slim
 
-WORKDIR /usr/src/app
+WORKDIR /src
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 
-RUN yarn install --production --frozen-lockfile && yarn cache clean
+COPY .env ./.env
+
+RUN npx install --production --frozen-lockfile && npx cache clean --force
 
 ENV NODE_ENV="production"
 
 COPY . .
 
-RUN yarn build
+RUN npx run build
 RUN ls -la
 
 EXPOSE 3000
 
-CMD [ "yarn", "start" ]
+CMD [ "node", "-r dotenv/config ./dist/index.js" ]
