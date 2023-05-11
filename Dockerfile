@@ -6,11 +6,11 @@ COPY package.json .env ./
 
 ENV NODE_ENV="production"
 
-RUN npx install --production --no-optional && npx cache clean --force
+RUN npm install --production && npm cache clean --force
 
 COPY . .
 
-RUN npx run build
+RUN npm run build
 
 EXPOSE 3000
 
